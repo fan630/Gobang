@@ -28,6 +28,7 @@
 <script>
 import GobangCell from "../components/GobangCell"
 import Victory from "../components/Victory"
+import youWon from "../Utilities/youWon"
 
 export default {
     name: 'Online',
@@ -130,200 +131,19 @@ export default {
 
             // 檢測人是否勝利
             //var cell = this.step
-            if (this.isRowVictory(cell)) {
+            if (youWon.isRowVictory(cell, this.Target, this.gameBoard, this.wins)) {
                 victory = true
             }
 
-            if (this.isColumnVictory(cell)) {
+            if (youWon.isColumnVictory(cell, this.Target, this.gameBoard, this.wins)) {
                 victory = true
             }
 
-            if (this.isSlashVictory(cell)) {
+            if (youWon.isSlashVictory(cell, this.Target, this.gameBoard, this.wins)) {
                 victory = true
             }
 
-            if (this.isBackSlashVictory(cell)) {
-                victory = true
-            }
-
-            return victory
-
-        },
-        // 橫向
-        isRowVictory(cell) {
-            // 初始化
-            var victory = false
-            this.wins = 0
-            //判定
-            var row = cell[0]
-            var col = cell[1]
-            var type = cell[2]
-
-            // 首先, 判斷格子的左邊
-            for (var i = col; i >= 0; i--) {
-                var item = this.gameBoard[row][i]
-                if (item[2] && item[2] === type) {
-                    this.wins += 1
-                } else {
-                    break;
-                }
-            }
-            // 判斷格子的右邊
-            if (col + 1 < this.BOARD_COLS) {
-                for (var i = col + 1; i < this.BOARD_COLS; i++) {
-                    var item = this.gameBoard[row][i]
-                    if (item[2] && item[2] === type) {
-                        this.wins += 1
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            if (this.wins >= this.Target) {
-                victory = true
-            }
-
-            return victory
-        },
-        // 縱項
-        isColumnVictory(cell) {
-            // 初始化
-            var victory = false
-            this.wins = 0
-            //判定
-            var row = cell[0]
-            var col = cell[1]
-            var type = cell[2]
-
-            // 首先, 判斷格子的上面
-            for (var i = 0; i < this.BOARD_ROWS && i < this.BOARD_COLS; i++) {
-                var nextRow = row - i
-                var nextCol = col
-
-                // 因為是上方判斷,都不能小於0
-                if (nextRow >= 0 && nextCol < this.BOARD_COLS) {
-                    var item = this.gameBoard[nextRow][nextCol]
-                    if (item[2] && item[2] === type) {
-                        this.wins += 1
-                    } else {
-                        break;
-                    }
-                }
-            }
-            // 判斷格子的下面
-            for (var i = 1; i < this.Target && i < this.Target; i++) {
-                var nextRow = row + i
-                var nextCol = col
-
-                // 因為是下方判斷,都不能小於0
-                if (nextRow < this.BOARD_ROWS && nextCol >= 0) {
-                    var item = this.gameBoard[nextRow][nextCol]
-                    if (item[2] && item[2] === type) {
-                        this.wins += 1
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            if (this.wins >= this.Target) {
-                victory = true
-            }
-
-            return victory
-        },
-        //斜向
-        isSlashVictory(cell) {
-            var victory = false
-            this.wins = 0
-            //判定
-            var row = cell[0]
-            var col = cell[1]
-            var type = cell[2]
-
-            // 首先, 判斷格子的右上方
-            // 避免橫向,縱向 棋盤列數不一樣
-            for (var i = 0; i < this.BOARD_ROWS && i < this.BOARD_COLS; i++) {
-                var nextRow = row - i
-                var nextCol = col + i
-
-                // 因為是右上方判斷,都不能小於0
-                if (nextRow >= 0 && nextCol < this.BOARD_COLS) {
-                    var item = this.gameBoard[nextRow][nextCol]
-                    if (item[2] && item[2] === type) {
-                        this.wins += 1
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            //判斷格子的左下方
-            for (var i = 1; i < this.BOARD_ROWS && i < this.BOARD_COLS; i++) {
-                var nextRow = row + i
-                var nextCol = col - i
-
-                // 因為是左下方判斷,都不能小於0
-                if (nextRow < this.BOARD_ROWS && nextCol >= 0) {
-                    var item = this.gameBoard[nextRow][nextCol]
-                    if (item[2] && item[2] === type) {
-                        this.wins += 1
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            if (this.wins >= this.Target) {
-                victory = true
-            }
-
-            return victory
-        },
-        //反斜向 
-        isBackSlashVictory(cell) {
-            var victory = false
-            this.wins = 0
-            //判定
-            var row = cell[0]
-            var col = cell[1]
-            var type = cell[2]
-
-            // 首先, 判斷格子的左上方
-            // 避免橫向,縱向 棋盤列數不一樣
-            for (var i = 0; i < this.BOARD_ROWS && i < this.BOARD_COLS; i++) {
-                var nextRow = row - i
-                var nextCol = col - i
-
-                // 因為是左上方判斷,都不能小於0
-                if (nextRow >= 0 && nextCol >= 0) {
-                    var item = this.gameBoard[nextRow][nextCol]
-                    if (item[2] && item[2] === type) {
-                        this.wins += 1
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            // 判斷格子的右下方
-            for (var i = 1; i < this.BOARD_ROWS && i < this.BOARD_COLS; i++) {
-                var nextRow = row + i
-                var nextCol = col + i
-
-                // 因為是右下方判斷,都不能小於0
-                if (nextRow < this.BOARD_ROWS && nextCol < this.BOARD_COLS) {
-                    var item = this.gameBoard[nextRow][nextCol]
-                    if (item[2] && item[2] === type) {
-                        this.wins += 1
-                    } else {
-                        break;
-                    }
-                }
-            }
-
-            if (this.wins >= this.Target) {
+            if (youWon.isBackSlashVictory(cell, this.Target, this.gameBoard, this.wins)) {
                 victory = true
             }
 
@@ -331,6 +151,7 @@ export default {
         },
         hideModel() {
             this.showModel = false
+            this.reStart()
         },
         reStart() {
             this.initBoard();
